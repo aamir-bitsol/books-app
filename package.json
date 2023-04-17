@@ -4,7 +4,7 @@
   "description": "",
   "main": "app.js",
   "scripts": {
-    "start:dev": "nodemon app.js"
+    "start": "tsc && nodemon dist/app.js"
   },
   "author": "",
   "license": "ISC",
@@ -12,6 +12,19 @@
     "body-parser": "^1.20.2",
     "ejs": "^3.1.9",
     "express": "^4.18.2",
-    "nodemon": "^2.0.22"
-  }
+    "joi": "^17.9.1",
+    "nodemon": "^2.0.22",
+    "pg": "^8.10.0",
+    "pg-hstore": "^2.3.4",
+    "sequelize": "^6.31.0",
+    "sequelize-cli": "^6.6.0",
+    "sequelize-typescript": "^2.1.5"
+  },
+  "devDependencies": {
+    "@types/express": "^4.17.17",
+    "@types/node": "^18.15.11",
+    "typescript": "^5.0.4"
+  },
+  "verbose": true,
+  "watch": "src/**/*.ts"
 }
