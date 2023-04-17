@@ -1,10 +1,10 @@
 import { DataTypes } from "sequelize";
-import sequelize from "./book.setup"
+import sequelize from "./db.setup"
 
 
 const Book = sequelize.define("books", {
     id: {
-      type: DataTypes.NUMBER,
+      type: DataTypes.INTEGER,
       allowNull: true,
       autoIncrement: true,
       primaryKey: true,
