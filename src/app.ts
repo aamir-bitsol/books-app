@@ -1,20 +1,27 @@
-import express, { Express, Router} from 'express';
-import sequelize from './db/db.setup';
+import express, { Express, Router } from "express";
 import * as bodyParser from "body-parser";
+import dotenv  from "dotenv"
+import sequelize from "./db/db.setup";
 
-const booksRouter:Router = require('./routes/books')
-const usersRouter:Router = require('./routes/users')
+import bookRoutes from "./routes/book.routes";
+import usersRoutes from "./routes/user.routes";
+import authRoutes from "./routes/auth.routes";
+
+dotenv.config()
+
 const app: Express = express();
-const port: number = 3000;
-
+const port = process.env.PORT || 3000;
 
 app.use(bodyParser.json());
-app.use("/books", booksRouter)
-app.use("/users", usersRouter)
+
+app.use("/books", bookRoutes);
+app.use("/users", usersRoutes);
+app.use("/auth", authRoutes);
+
 
 const start = async (): Promise<void> => {
   try {
-    await sequelize.sync({force: true});
+    await sequelize.sync({force:true});
     app.listen(port, () => {
       console.log(`Server started on port ${port}`);
     });
@@ -24,4 +31,4 @@ const start = async (): Promise<void> => {
   }
 };
 
-void start()
+void start();

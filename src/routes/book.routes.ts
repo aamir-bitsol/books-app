@@ -10,5 +10,4 @@ router.get("/:id", getSpecificBooks)
 router.delete("/:id", deleteBook);
 router.put("/:id", updateBook);
 
-
-module.exports = router;
+export default router
