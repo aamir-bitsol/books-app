@@ -1,22 +1,35 @@
-import { DataTypes } from "sequelize";
-import sequelize from "./db.setup"
+import { Model, DataTypes } from "sequelize";
+import sequelize from "./db.setup";
+import User from "./user.model";
 
+class Book extends Model {}
 
-const Book = sequelize.define("books", {
+Book.init(
+  {
     id: {
-      type: DataTypes.INTEGER,
-      allowNull: true,
+      type: DataTypes.INTEGER.UNSIGNED,
       autoIncrement: true,
       primaryKey: true,
     },
     author: {
       type: DataTypes.STRING,
       allowNull: false,
+      // references: {
+      //   model: User, // 'Movies' would also work
+      //   key: "id",
+      // },
     },
     title: {
       type: DataTypes.STRING,
       allowNull: false,
     },
-  });
+  },
+  {
+    tableName: "book",
+    sequelize,
+  }
+);
 
-  export default Book;
+// Book.belongsTo(User);
+
+export default Book;

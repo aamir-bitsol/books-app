@@ -3,6 +3,8 @@ import User from "../db/user.model";
 import {userSchema} from "./user.controller";
 import { sign } from "jsonwebtoken";
 import { hashSync, compareSync } from "bcryptjs";
+import Book from "../db/book.model";
+
 
 export const signUp = async (
     req: Request<
@@ -44,14 +46,15 @@ export const signUp = async (
     const user = await User.create({
         ...value, password: hashSync(password, 8)
     });
-  
+
     return res.status(200).send({
-      message: "New record created successfully",
+      message: "New User created successfully",
       success: true,
       error: false,
       data: user,
     });
   };
+
 
 export const signIn = async (
     req: Request<never, never, { username: string; password: string }, never>,
@@ -60,8 +63,12 @@ export const signIn = async (
     const { body } = req;
     const { username, password } = body;
 
-    const user: any = await User.findOne({ where: { username } });
-  
+
+    const user: any = await User.findOne({ 
+      where: { username },
+      attributes: ["id","username", "email", "password"],
+    });
+
     if (!user) {
       return res.status(400).send({
         message: "invalid username",
@@ -70,20 +77,23 @@ export const signIn = async (
         data: null,
       });
     }
+
+    const books: any = await Book.findAll({where:{UserId:user.id}});
   
-    const passwordIsValid = compareSync(password, user.password);
+    const passwordIsValid: boolean = compareSync(password, user.password);
     const secret_key = process.env.MY_SECRET_KEY;
 
     if (!passwordIsValid) {
       return res.status(401).send({ message: "Invalid Password" });
     }
-    const token = sign({ id: user.id }, secret_key as string);
-  
+    const token: string = sign({ id: user.id }, secret_key as string);
+
     return res.status(200).send({
       id: user.id,
       username: user.username,
       email: user.email,
       token,
+      books,
       message: "logged in successfully",
     });
   };

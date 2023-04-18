@@ -1,4 +1,4 @@
-import express, { Express, Router } from "express";
+import express, { Express } from "express";
 import * as bodyParser from "body-parser";
 import dotenv  from "dotenv"
 import sequelize from "./db/db.setup";
@@ -12,16 +12,18 @@ dotenv.config()
 const app: Express = express();
 const port = process.env.PORT || 3000;
 
+
 app.use(bodyParser.json());
 
+
+app.use("/auth", authRoutes);
 app.use("/books", bookRoutes);
 app.use("/users", usersRoutes);
-app.use("/auth", authRoutes);
 
 
 const start = async (): Promise<void> => {
   try {
-    await sequelize.sync({force:true});
+    await sequelize.sync();
     app.listen(port, () => {
       console.log(`Server started on port ${port}`);
     });

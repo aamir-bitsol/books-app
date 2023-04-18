@@ -1,6 +1,9 @@
 import { Request, Response } from "express";
 import User from "../db/user.model";
 import joi from "joi";
+import Book  from '../db/book.model'
+
+const UserModel = User.hasMany(Book)
 
 export const userSchema = joi.object({
   name: joi.string().min(1).required(),
