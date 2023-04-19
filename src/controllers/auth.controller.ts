@@ -63,10 +63,14 @@ export const signIn = async (
     const { body } = req;
     const { username, password } = body;
 
-
     const user: any = await User.findOne({ 
       where: { username },
       attributes: ["id","username", "email", "password"],
+      include:[{
+        model: Book,
+        as: "books",
+        required: false,
+      }] 
     });
 
     if (!user) {
@@ -77,8 +81,6 @@ export const signIn = async (
         data: null,
       });
     }
-
-    const books: any = await Book.findAll({where:{UserId:user.id}});
   
     const passwordIsValid: boolean = compareSync(password, user.password);
     const secret_key = process.env.MY_SECRET_KEY;
@@ -89,11 +91,10 @@ export const signIn = async (
     const token: string = sign({ id: user.id }, secret_key as string);
 
     return res.status(200).send({
-      id: user.id,
-      username: user.username,
-      email: user.email,
+      success: true,
+      error: false,
+      user,
       token,
-      books,
       message: "logged in successfully",
     });
   };

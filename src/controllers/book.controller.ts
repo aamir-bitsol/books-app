@@ -5,14 +5,14 @@ import User from '../db/user.model';
 
 const book_schema = joi.object({
   title: joi.string().min(1).required(),
-  author: joi.string().min(1).required(),
   UserId: joi.number().required(),
 });
 
 
-export const getAllBooks = async (req: Request<never, never, {title: string, author: string}, never>,
+export const getAllBooks = async (req: Request<never, never, {title: string, author: number}, never>,
     res: Response) => {
-      const books: any = await Book.findAll();
+      const books: any = await Book.findAll({include:User});
+
       res.status(200).send({
         message: "Displaying all the data",
         success: true,
@@ -22,15 +22,14 @@ export const getAllBooks = async (req: Request<never, never, {title: string, aut
 }
 
 
-export const getSpecificBooks = async (req: Request<never, never, never, never>,
+export const getSpecificBook = async (req: Request<never, never, never, never>,
     res: Response) => {
     const { id } = req.params;
-    const book: any = await Book.findByPk(id);
-    const user: any = await User.findByPk(book.UserId,{attributes:['name', "email", "username"]});
+    const book: any = await Book.findOne({
+      where:{id},
+      include:[{model: User, as: "User"}]
+    });
     
-    book.dataValues.author = user;
-    delete book.dataValues.UserId;
-
     if (!book){
         return res.status(404).send({
         message: "Record not found",
@@ -39,6 +38,8 @@ export const getSpecificBooks = async (req: Request<never, never, never, never>,
         data: null,
         });
     }
+    delete book.UserId;
+
     return res.status(200).send({
         message: `Book# ${id}`,
         success: true,
@@ -48,7 +49,7 @@ export const getSpecificBooks = async (req: Request<never, never, never, never>,
 }
       
 
-export const deleteBook = async (req: Request<never, never, {title: string, author: string}, never>,
+export const deleteBook = async (req: Request<never, never, never, never>,
     res: Response) => {
     const { id } = req.params;
     const book: any = await Book.findByPk(id);
@@ -73,13 +74,13 @@ export const deleteBook = async (req: Request<never, never, {title: string, auth
 
 
 export const createBook =  async (
-    req: Request<never, never, { title: string; author: string, UserId: number }, never>,
+    req: Request<never, never, { title: string; UserId: number }, never>,
     res: Response
   ) => {
-    const { title, author, UserId } = req.body;
-    const { error, value } = book_schema.validate({ title, author, UserId });
-
+    const { title, UserId } = req.body;
+    const { error, value } = book_schema.validate({ title, UserId });
     const isUser: any = await User.findByPk(UserId);
+   
     if(!isUser){
       return res.status(400).send({
         message: "Invalid User ID",
@@ -91,7 +92,7 @@ export const createBook =  async (
 
     if (error) {
       return res.status(400).send({
-        message: "Invalid input values",
+        message: error,
         success: false,
         error: true,
         data: null,
@@ -110,15 +111,26 @@ export const createBook =  async (
 
   
 export const updateBook = async (
-  req: Request<never, never, { title: string; author: string }, never>,
+  req: Request<never, never, { title: string, UserId: number }, never>,
   res: Response
 ) => {
   const { body, params } = req;
   const { id } = params;
-  const { title, author } = body;
+  const { title, UserId } = body;
 
   const book: any = await Book.findByPk(id);
-  const { error, value } = book_schema.validate({ title, author });
+  const { error, value } = book_schema.validate({ title, UserId });
+
+  const isUser: any = await User.findByPk(UserId);
+   
+  if(!isUser){
+    return res.status(400).send({
+      message: "Invalid User ID",
+      success: false,
+      error: true,
+      data: null,
+    });
+  }
 
   if (error) {
     return res.status(400).send({
@@ -136,8 +148,8 @@ export const updateBook = async (
       data: null,
     });
 
-  book.author = value.author;
   book.title = value.title;
+  book.UserId = value.UserId;
 
   await book.save();
 

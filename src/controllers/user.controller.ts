@@ -1,9 +1,7 @@
 import { Request, Response } from "express";
 import User from "../db/user.model";
 import joi from "joi";
-import Book  from '../db/book.model'
-
-const UserModel = User.hasMany(Book)
+import Book from "../db/book.model";
 
 export const userSchema = joi.object({
   name: joi.string().min(1).required(),
@@ -32,7 +30,7 @@ export const getAllUsers = async (
   >,
   res: Response
 ) => {
-  const users: any = await User.findAll();
+  const users: any = await User.findAll({include:[{model: Book, as: "books"}]});
   res.status(200).send({
     message: "Displaying all the data",
     success: true,
@@ -59,8 +57,10 @@ export const getSpecificUser = async (
   res: Response
 ) => {
   const { id } = req.params;
-  const user: any = await User.findByPk(id);
-
+  const user: any = await User.findOne({
+    where:{id},
+    include:[{model: Book, as: "books"}]
+  });
   if (!user) {
     return res.status(404).send({
       message: "Record not found",

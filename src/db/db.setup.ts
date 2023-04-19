@@ -3,7 +3,6 @@ import { Sequelize } from "sequelize-typescript";
 const sequelize: Sequelize = new Sequelize("booksdb", "postgres", "root", {
   host: "localhost",
   dialect: "postgres",
-  // define: { timestamps: true },
   logging: true,
 });
 

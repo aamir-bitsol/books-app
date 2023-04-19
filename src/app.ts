@@ -23,7 +23,7 @@ app.use("/users", usersRoutes);
 
 const start = async (): Promise<void> => {
   try {
-    await sequelize.sync();
+    await sequelize.sync({force:true});
     app.listen(port, () => {
       console.log(`Server started on port ${port}`);
     });

@@ -47,11 +47,13 @@ User.init(
     },
   },
   {
-    tableName: 'users',
+    tableName: 'user',
     sequelize,
   }
 );
 
-User.hasMany(Book, { foreignKey: "id"});
+User.hasMany(Book, {as: "books"});
+Book.belongsTo(User);
+
 
 export default User;
