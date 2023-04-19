@@ -5,7 +5,7 @@ import { verify } from "jsonwebtoken";
 function middleware(req: Request, res: Response, next: any){
     const token: string | undefined = req.headers['authorization'];
     if(!token){
-        res.status(401).send({message: "Please send token in headers."})
+        return res.status(401).send({message: "Please send token in headers."})
     }
     try{
         token && verify(token.split(" ")[1], process.env.MY_SECRET_KEY as string);

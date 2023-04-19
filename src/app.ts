@@ -1,8 +1,8 @@
 import express, { Express } from "express";
 import * as bodyParser from "body-parser";
 import dotenv  from "dotenv"
-import sequelize from "./db/db.setup";
 
+import sequelize from "./db/db.setup";
 import bookRoutes from "./routes/book.routes";
 import usersRoutes from "./routes/user.routes";
 import authRoutes from "./routes/auth.routes";

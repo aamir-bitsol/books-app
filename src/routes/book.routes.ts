@@ -4,12 +4,10 @@ import middleware from "../middleware/auth.middleware"
 
 const router: Router = Router();
 
-router.use("/", middleware);
-
-router.post("/", createBook);
-router.get("/", getAllBooks);
-router.get("/:id", getSpecificBook)
-router.delete("/:id", deleteBook);
-router.put("/:id", updateBook);
+router.post("/", middleware, createBook);
+router.get("/", middleware, getAllBooks);
+router.get("/:id", middleware, getSpecificBook)
+router.delete("/:id", middleware, deleteBook);
+router.put("/:id", middleware ,updateBook);
 
 export default router
