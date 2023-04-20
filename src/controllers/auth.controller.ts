@@ -4,6 +4,7 @@ import {userSchema} from "./user.controller";
 import { sign } from "jsonwebtoken";
 import { hashSync, compareSync } from "bcryptjs";
 import Book from "../db/book.model";
+import { writeFile } from "fs";
 
 
 export const signUp = async (
@@ -18,12 +19,13 @@ export const signUp = async (
         username: string;
         password: string;
         email: string;
+        image: string,
       },
       never
     >,
     res: Response
   ) => {
-    const { name, age, contact, address, username, password, email } = req.body;
+    const { name, age, contact, address, username, password, email, image } = req.body;
     const { error, value } = userSchema.validate({
       name,
       age,
@@ -33,7 +35,8 @@ export const signUp = async (
       password,
       email,
     });
-  
+    
+   
     if (error) {
       return res.status(400).send({
         message: error,
@@ -42,10 +45,17 @@ export const signUp = async (
         data: null,
       });
     }
-
-    const user = await User.create({
-        ...value, password: hashSync(password, 8)
+    
+    const base64Data: any= req.body.image.split("base64,").pop();
+    const filepath: string = `/public/image_${Date.now()}.png`
+    console.log(filepath);
+    writeFile(filepath, base64Data, 'base64', function(err) {
+      console.log(err);
     });
+    const user: any = await User.create({
+        ...value, password: hashSync(password, 8), image: filepath
+    });
+
 
     return res.status(200).send({
       message: "New User created successfully",
@@ -62,15 +72,15 @@ export const signIn = async (
   ) => {
     const { body } = req;
     const { username, password } = body;
-
+    
     const user: any = await User.findOne({ 
       where: { username },
-      attributes: ["id","username", "email", "password"],
+      attributes: ["id","username", "email", "password", "image"],
       include:[{
         model: Book,
         as: "books",
         required: false,
-      }] 
+      }]
     });
 
     if (!user) {
@@ -88,8 +98,8 @@ export const signIn = async (
     if (!passwordIsValid) {
       return res.status(401).send({ message: "Invalid Password" });
     }
-    const token: string = sign({ id: user.id }, secret_key as string);
 
+    const token: string = sign({ id: user.id, username: user.username, email: user.email }, secret_key as string);
     return res.status(200).send({
       success: true,
       error: false,

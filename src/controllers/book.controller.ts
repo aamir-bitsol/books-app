@@ -2,6 +2,7 @@ import { Request, Response } from 'express'
 import Book from '../db/book.model';
 import joi from "joi";
 import User from '../db/user.model';
+import passport from '../passport/strategy';
 
 const book_schema = joi.object({
   title: joi.string().min(1).required(),

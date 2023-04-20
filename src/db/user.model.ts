@@ -45,6 +45,10 @@ User.init(
         isEmail: true,
       },
     },
+    image:{
+      type: DataTypes.STRING,
+      allowNull: true,
+    }
   },
   {
     tableName: 'user',

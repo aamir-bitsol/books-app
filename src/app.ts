@@ -1,6 +1,7 @@
 import express, { Express } from "express";
 import * as bodyParser from "body-parser";
 import dotenv  from "dotenv"
+import __dirname from "path";
 
 import sequelize from "./db/db.setup";
 import bookRoutes from "./routes/book.routes";
@@ -12,9 +13,9 @@ dotenv.config()
 const app: Express = express();
 const port = process.env.PORT || 3000;
 
-
+app.use(bodyParser.urlencoded({ extended: true }));
 app.use(bodyParser.json());
-
+app.use(express.static('public'));
 
 app.use("/auth", authRoutes);
 app.use("/books", bookRoutes);
