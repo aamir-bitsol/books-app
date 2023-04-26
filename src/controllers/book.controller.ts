@@ -10,16 +10,26 @@ const book_schema = joi.object({
 });
 
 
-export const getAllBooks = async (req: Request<never, never, {title: string, author: number}, never>,
+export const getAllBooks = async (req: Request<never, never, {title: string, author: number}, {page: string, pageSize: string}, never>,
     res: Response) => {
-      const books: any = await Book.findAll({include:User});
+      const page: number = parseInt(req.query.page) || 1;
+      const pageSize: number = parseInt(req.query.pageSize) || 10;
+      const offset: number = (page - 1) * pageSize;
+      const limit: number = pageSize;
+      const books: any = await Book.findAll({limit, offset, include:User});
+      const totalBooks: number = await Book.count();
+      const totalPages: number = Math.ceil(totalBooks / pageSize);
 
       res.status(200).send({
         message: "Displaying all the data",
         success: true,
         error: false,
         data: books,
-    });
+        page,
+        pageSize,
+        totalBooks,
+        totalPages,
+      });
 }
 
 

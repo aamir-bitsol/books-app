@@ -1,14 +1,19 @@
 import { Router } from "express";
-import { getAllBooks, getSpecificBook, deleteBook, createBook, updateBook } from "../controllers/book.controller";
-import middleware from "../middleware/auth.middleware"
-import passport from "../passport/strategy";
+import {
+  getAllBooks,
+  getSpecificBook,
+  deleteBook,
+  createBook,
+  updateBook,
+} from "../controllers/book.controller";
+import Authenticate from "../middleware/auth.middleware";
 
 const router: Router = Router();
 
-router.post("/", passport.authenticate("jwt", {session: false}), createBook);
-router.get("/", passport.authenticate("jwt", {session: false}), getAllBooks);
-router.get("/:id", passport.authenticate("jwt", {session: false}), getSpecificBook)
-router.delete("/:id", passport.authenticate("jwt", {session: false}), deleteBook);
-router.put("/:id", passport.authenticate("jwt", {session: false}), updateBook);
+router.get("/", Authenticate, getAllBooks);
+router.post("/", Authenticate, createBook);
+router.get("/:id", Authenticate, getSpecificBook);
+router.delete("/:id", Authenticate, deleteBook);
+router.put("/:id", Authenticate, updateBook);
 
-export default router
+export default router;

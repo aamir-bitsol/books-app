@@ -11,6 +11,7 @@ export const userSchema = joi.object({
   username: joi.string().min(6).max(50).required(),
   password: joi.string().min(8).max(50).required(),
   email: joi.string().min(5).max(22).required().email(),
+  image: joi.string(),
 });
 
 export const getAllUsers = async (
@@ -26,16 +27,33 @@ export const getAllUsers = async (
       password: string;
       email: string;
     },
+    { page: string; pageSize: string },
     never
   >,
   res: Response
 ) => {
-  const users: any = await User.findAll({include:[{model: Book, as: "books"}]});
+  
+  const page: number = parseInt(req.query.page) || 1;
+  const pageSize: number = parseInt(req.query.pageSize) || 10;
+  const offset: number = (page - 1) * pageSize;
+  const limit: number = pageSize;
+  const totalUsers: number = await User.count();
+  const totalPages: number = Math.ceil(totalUsers / pageSize);
+  const users: any = await User.findAll({
+    limit,
+    offset,
+    include: [{ model: Book, as: "books" }],
+  });
+
   res.status(200).send({
     message: "Displaying all the data",
     success: true,
     error: false,
     data: users,
+    page,
+    pageSize,
+    totalUsers,
+    totalPages,
   });
 };
 
@@ -58,8 +76,8 @@ export const getSpecificUser = async (
 ) => {
   const { id } = req.params;
   const user: any = await User.findOne({
-    where:{id},
-    include:[{model: Book, as: "books"}]
+    where: { id },
+    include: [{ model: Book, as: "books" }],
   });
   if (!user) {
     return res.status(404).send({
@@ -115,7 +133,6 @@ export const deleteUser = async (
     data: user,
   });
 };
-
 
 export const updateUser = async (
   req: Request<

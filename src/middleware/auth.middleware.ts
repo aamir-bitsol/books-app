@@ -1,19 +1,19 @@
 import { Response, Request } from "express";
-import { verify } from "jsonwebtoken";
+import passport from "../passport/strategy";
 
 
-function middleware(req: Request, res: Response, next: any){
-    const token: string | undefined = req.headers['authorization'];
-    if(!token){
-        return res.status(401).send({message: "Please send token in headers."})
-    }
-    try{
-        token && verify(token.split(" ")[1], process.env.MY_SECRET_KEY as string);
-        next();
-    }
-    catch(err){
-        return res.status(400).send({"message": "Invalid Token"})
-    }
+function Authenticate(req: Request, res: Response, next: any): any {
+    passport.authenticate(
+      "jwt",
+      { session: false },
+      (err: string, user: any, info: any) => {
+        if (info) {
+          res.status(401).json({ message: "Missing headers or invalid token" });
+        } else {
+          next();
+        }
+      }
+    )(req, res);
 }
 
-export default middleware;
+export default Authenticate;
