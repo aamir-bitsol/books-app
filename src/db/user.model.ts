@@ -57,7 +57,7 @@ User.init(
 );
 
 User.hasMany(Book, {as: "books"});
-Book.belongsTo(User);
+Book.belongsTo(User, {foreignKey:"UserId", as: "author"});
 
 
 export default User;

@@ -1,10 +1,9 @@
-import path, { resolve } from "path";
+import { resolve } from "path";
 import { Request, Response } from "express";
 import User from "../db/user.model";
 import { userSchema } from "./user.controller";
 import { sign } from "jsonwebtoken";
 import { hashSync, compareSync } from "bcryptjs";
-import Book from "../db/book.model";
 import { writeFile } from "fs";
 
 export const signUp = async (
@@ -25,8 +24,7 @@ export const signUp = async (
   >,
   res: Response
 ) => {
-  const { name, age, contact, address, username, password, email, image } =
-    req.body;
+  const { name, age, contact, address, username, password, email, image } = req.body;
   const { error, value } = userSchema.validate({
     name,
     age,
@@ -81,14 +79,7 @@ export const signIn = async (
 
   const user: any = await User.findOne({
     where: { username },
-    attributes: ["id", "username", "email", "password", "image"],
-    include: [
-      {
-        model: Book,
-        as: "books",
-        required: false,
-      },
-    ],
+    attributes: ["id", "username", "email", "password", "image"]
   });
 
   if (!user) {

@@ -32,7 +32,6 @@ export const getAllUsers = async (
   >,
   res: Response
 ) => {
-  
   const page: number = parseInt(req.query.page) || 1;
   const pageSize: number = parseInt(req.query.pageSize) || 10;
   const offset: number = (page - 1) * pageSize;
@@ -77,7 +76,9 @@ export const getSpecificUser = async (
   const { id } = req.params;
   const user: any = await User.findOne({
     where: { id },
-    include: [{ model: Book, as: "books" }],
+    include: [
+      { model: Book, as: "books", attributes: { exclude: ["UserId"] } },
+    ],
   });
   if (!user) {
     return res.status(404).send({

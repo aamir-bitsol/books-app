@@ -1,8 +1,8 @@
 import { Response, Request } from "express";
 import passport from "../passport/strategy";
 
-
-function Authenticate(req: Request, res: Response, next: any): any {
+// This middleware checks for headers and see if given token is correct or not.
+function authMiddleware(req: Request, res: Response, next: any): any {
     passport.authenticate(
       "jwt",
       { session: false },
@@ -16,4 +16,4 @@ function Authenticate(req: Request, res: Response, next: any): any {
     )(req, res);
 }
 
-export default Authenticate;
+export default authMiddleware;

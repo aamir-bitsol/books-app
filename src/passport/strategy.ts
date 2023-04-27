@@ -18,21 +18,20 @@ let opts: IOptionsInterface = {
 
 passport.use(
   new Strategy(opts, async function (jwt_payload, done) {
-   
     try {
       const user: any = await User.findOne({
         where: { username: jwt_payload.username },
       });
       if (!user) {
         console.log(user);
-        done(null, false, );
+        done(null, false);
       }
     } catch (err) {
       done(err, false);
     }
     if (!opts.jwtFromRequest) {
-        done(null, false);
-      }
+      done(null, false);
+    }
     done(null, true);
   })
 );
